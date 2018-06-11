@@ -1,4 +1,4 @@
-package vms;
+package tpm.vms;
 
 public class VMS_TPM {
 
@@ -9,7 +9,7 @@ public class VMS_TPM {
 		}
 		for (String port : args) {
 			int p = Integer.parseInt(port);
-			new Thread(new VMSServer(p)).start();
+			new Thread(new VMS_TPM_Server(p)).start();
 		}
 	}
 
