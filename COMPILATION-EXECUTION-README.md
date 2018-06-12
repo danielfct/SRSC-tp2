@@ -44,7 +44,7 @@ mvn package
 
 # Executar o redis-server
 
-Na pasta src do redis  
+Na pasta src do redis
 ./redis-server
 
 # Executar o servidor VMS-TPM
@@ -62,3 +62,4 @@ java -cp target/JedisBenchmark-1.0-SNAPSHOT.jar tpm.gos.GOS_TPM 4445 /home/osbox
 Na diretoria principal do projeto  
 java -Djavax.net.ssl.trustStore=/home/osboxes/Desktop/SRSC/JedisBenchmark/clientTrustStore -cp target/JedisBenchmark-1.0-SNAPSHOT.jar client.JedisBenchmark /home/osboxes/Desktop/SRSC/JedisBenchmark/clientconfig.conf 100
 
+NOTA: Se haver excepcão "ServerNotVerified", executar os servidores no eclipse
