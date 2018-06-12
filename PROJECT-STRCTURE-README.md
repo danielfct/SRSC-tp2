@@ -34,13 +34,14 @@ srsc-tp2
     |   |    	|-- BadRequestCodeException.java    
     |   |   	|-- DataReplyingException.java
     |   `-- gos
-    |   	|-- GOSConfiguration.java
-    |   	|-- GOSService.java
-    |   	|-- GOSServer.java
-    |   	|-- GOS_TPM.java
-    |		`-- exceptions
-    |       	|-- BadRequestCodeException.java    
-    |       	|-- DataReplyingException.java
+    |   |	|-- GOSConfiguration.java
+    |   |	|-- GOSService.java
+    |   |	|-- GOSServer.java
+    |   |	|-- GOS_TPM.java
+    |	|	`-- exceptions
+    |   |   	|-- BadRequestCodeException.java    
+    |   |    	|-- DataReplyingException.java
+	|	|-- CommandUtils.java
     `-- utils
     	|-- GenerateSecretKey.java
         |-- GenerateKeyPair.java
@@ -179,6 +180,10 @@ Classe main do módulo GOS-TPM, inicia pelo menos um servidor gos
 
 
 # ----- Classes de utilidade -----
+
+# CommandUtils.java
+
+Classe de utilidade para executar comandos unix
 
 # GenerateSecretKey.java
 

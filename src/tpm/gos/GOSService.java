@@ -102,11 +102,6 @@ class GOSService implements Runnable {
 			String psNautilusAttestation = CommandUtils.ps("nautilus");
 			String psGSDKeyboard = CommandUtils.ps("gsd-keyboard");
 			
-			System.out.println(psRedisAttestation);
-			System.out.println(psNautilusAttestation);
-			System.out.println(psGSDKeyboard);
-			System.out.println(psRedisAttestation+psNautilusAttestation+psGSDKeyboard);
-			
 			// cifrar a atestacao
 			MessageDigest hash = MessageDigest.getInstance(config.messageDigestAlgorithm, config.messageDigestAlgorithmProvider);
 			keyAgreement.doPhase(clientKey, true);
