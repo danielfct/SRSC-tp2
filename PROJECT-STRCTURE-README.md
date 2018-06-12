@@ -11,38 +11,38 @@ srsc-tp2<br />
 |-- vmsKeyStore.jceks<br />
 |-- gosconfig.conf<br />
 |-- gosKeyStore.jceks<br />
-`-- src<br />
-    `-- client<br />
+|-- src<br />
+    |-- client<br />
     |	|-- ClientConfiguration.java<br />
     |	|-- GOSAttestation.java<br />
     |	|-- VMSAttestation.java<br />
     |	|-- RedisData.java<br />
     |	|-- RedisClient.java<br />
     |	|-- JedisBenchmark.java<br />
-    |	`-- exceptions<br />
+    |	|-- exceptions<br />
     |       |-- AttestationException.java    <br />
     |       |-- BadReplyCodeException.java<br />
     |   	|-- UnexceptedServerNounceException.java<br />
     |       |-- UnverifiedServerSignatureException.java<br />
-   	`-- tpm<br />
-   	|	`-- vms<br />
+   	|-- tpm<br />
+   	|	|-- vms<br />
     |   |	|-- VMSConfiguration.java<br />
     |   |	|-- VMSService.java<br />
     |   |	|-- VMSServer.java<br />
     |   |	|-- VMS_TPM.java<br />
-    |	|	`-- exceptions<br />
+    |	|	|-- exceptions<br />
     |   |    	|-- BadRequestCodeException.java    <br />
     |   |   	|-- DataReplyingException.java<br />
-    |   `-- gos<br />
+    |   |-- gos<br />
     |   |	|-- GOSConfiguration.java<br />
     |   |	|-- GOSService.java<br />
     |   |	|-- GOSServer.java<br />
     |   |	|-- GOS_TPM.java<br />
-    |	|	`-- exceptions<br />
+    |	|	|-- exceptions<br />
     |   |   	|-- BadRequestCodeException.java    <br />
     |   |    	|-- DataReplyingException.java
 	|	|-- CommandUtils.java<br />
-    `-- utils<br />
+    |-- utils<br />
     	|-- GenerateSecretKey.java<br />
         |-- GenerateKeyPair.java<br />
     	|-- GenerateMacKey.java
