@@ -1,4 +1,4 @@
-package cliente;
+package utils;
 
 import java.io.FileOutputStream;
 import java.math.BigInteger;
@@ -19,17 +19,20 @@ import sun.security.x509.*;
 public class GenerateKeyPair {
 
 	public static void main(String[] args) throws Exception {
-
-		final String keyStorePath = Configuration.getConfig("keyStorePath");
-		final String keyStorePassword = Configuration.getConfig("keyStorePassword");
-		final String keyPassword = Configuration.getConfig("privateKeyPassword");
-		final String keyAlias = Configuration.getConfig("privateKeyAlias");
-		final String keyAlgorithm = Configuration.getConfig("privateKeyAlgorithm");
-		final int keySize = Integer.parseInt(Configuration.getConfig("privateKeySize"));
-		final String provider = Configuration.getConfig("provider");
+		if (args.length != 9) {
+			System.out.println("Usage: GenerateKeyPair keyStorePath keyStorePassword "
+					+ "keyPassword keyAlias keyAlgorithm keySize provider certificateDN certificateValidation");
+		}
 		
-		final String dn = Configuration.getConfig("certificateDN");
-		final int validation = Integer.parseInt(Configuration.getConfig("certificateValidation"));
+		final String keyStorePath = args[0];
+		final String keyStorePassword = args[1];
+		final String keyPassword = args[2];
+		final String keyAlias = args[3];
+		final String keyAlgorithm = args[4];
+		final int keySize = Integer.parseInt(args[5]);
+		final String provider = args[6];
+		final String dn = args[7];
+		final int validation = Integer.parseInt(args[8]);
 
 		KeyStore keyStore = Utils.getOrCreateKeyStore(keyStorePath, keyStorePassword);
 
@@ -81,7 +84,6 @@ public class GenerateKeyPair {
 	
 
 	// Criar um certificado X.509 assinado pelo proprio
-	@SuppressWarnings("all")
 	private static X509Certificate generateCertificate(String dn, KeyPair pair, int days) throws Exception {
 	
 	  Date from = new Date();

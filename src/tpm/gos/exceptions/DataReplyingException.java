@@ -1,4 +1,4 @@
-package vms.exceptions;
+package tpm.gos.exceptions;
 
 public class DataReplyingException extends Exception {
 

@@ -1,9 +1,9 @@
-package vms;
-
+package tpm.gos;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.KeyStore;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -13,22 +13,23 @@ import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocket;
 
-import static vms.VMSConfiguration.config;
-
-public class VMSServer implements Runnable {
+class GOSServer implements Runnable {
 	
 	private static final int NUM_THREADS = 10;
 	
 	private final int serverPort;
 	private SSLServerSocket sslServerSocket;
-	private ExecutorService threadPool;
+	private ExecutorService threadPool;	
+	private GOSConfiguration config;
+	private ConcurrentHashMap.KeySetView<Integer,Boolean> nounces;
 	
-	public VMSServer(int port) {
+	GOSServer(int port, String configPath) throws IOException {
 		this.serverPort = port;
 		this.sslServerSocket = null;
 		this.threadPool = Executors.newFixedThreadPool(NUM_THREADS);
+		this.config = new GOSConfiguration(configPath);
+		this.nounces = ConcurrentHashMap.newKeySet(100);
 	}
-
 	@Override
 	public void run() {
 		openSSLServerSocket();
@@ -39,7 +40,7 @@ public class VMSServer implements Runnable {
 			} catch (IOException e) {
 				throw new RuntimeException("Error accepting client connection", e);
 			}
-			this.threadPool.execute(new VMSService(clientSocket));
+			this.threadPool.execute(new GOSService(config, clientSocket, nounces));
 		}
 		
 	} 
@@ -47,9 +48,9 @@ public class VMSServer implements Runnable {
 	private void openSSLServerSocket() {
 		try {
 			KeyStore keyStore = KeyStore.getInstance(config.keyStoreType);
-			keyStore.load(new FileInputStream(config.keyStorePath), config.keyStorePassword.toCharArray());
+			keyStore.load(new FileInputStream(config.keyStoreFile), config.keyStorePassword.toCharArray());
 			KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-			kmf.init(keyStore, config.certificatePassword.toCharArray());
+			kmf.init(keyStore, config.keyPairPassword.toCharArray());
 			SSLContext sc = SSLContext.getInstance("TLS");
 			sc.init(kmf.getKeyManagers(), null, null);
 			SSLServerSocketFactory ssf = sc.getServerSocketFactory();

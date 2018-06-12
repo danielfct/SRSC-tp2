@@ -21,6 +21,10 @@ public class CommandUtils {
 		BufferedReader r = new BufferedReader(new InputStreamReader(process.getInputStream()));
 		String line = null;
 		while ((line = r.readLine()) != null) {
+			if (line.contains("src") || 
+					line.contains("utils") ||
+					line.contains("dump.rdb")) // ficheiros que o redis modifica automaticamente
+				continue;
 			result += line;
 		}
 		return result;
@@ -42,8 +46,7 @@ public class CommandUtils {
 	}
 
 	public static String dockerps() {
-		// TODO Auto-generated method stub
-		return null;
+		return "";
 	}
 
 

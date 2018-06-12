@@ -1,4 +1,4 @@
-package cliente;
+package utils;
 
 import java.io.FileOutputStream;
 import java.security.KeyStore;
@@ -11,13 +11,16 @@ import javax.crypto.SecretKey;
 public class GenerateSecretKey {
 
 	public static void main(String[] args) throws Exception {
-
-		final String keyStorePath = Configuration.getConfig("keyStorePath");
-		final String keyStorePassword = Configuration.getConfig("keyStorePassword");
-		final String keyPassword = Configuration.getConfig("secretKeyPassword");
-		final String keyAlias = Configuration.getConfig("secretKeyAlias");
-		final String keyAlgorithm = Configuration.getConfig("secretKeyAlgorithm");
-		final int keySize = Integer.parseInt(Configuration.getConfig("secretKeySize"));
+		if (args.length != 6) {
+			System.out.println("Usage: GenerateSecretKey keyStorePath keyStorePassword keyPassword keyAlias keyAlgorithm keySize");
+		}
+		
+		final String keyStorePath = args[0];
+		final String keyStorePassword = args[1];
+		final String keyPassword = args[2];
+		final String keyAlias = args[3];
+		final String keyAlgorithm = args[4];
+		final int keySize = Integer.parseInt(args[5]);
 		
 		KeyStore keyStore = Utils.getOrCreateKeyStore(keyStorePath, keyStorePassword);
 		

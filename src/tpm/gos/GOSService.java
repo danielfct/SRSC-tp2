@@ -1,4 +1,4 @@
-package tpm.vms;
+package tpm.gos;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -25,20 +25,20 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import tpm.CommandUtils;
-import tpm.vms.exceptions.BadRequestCodeException;
-import tpm.vms.exceptions.DataReplyingException;
+import tpm.gos.exceptions.BadRequestCodeException;
+import tpm.gos.exceptions.DataReplyingException;
 
-public class VMSService implements Runnable {
+class GOSService implements Runnable {
 
 	private static final byte ATTESTATION_REQ_CODE = 0x00;
 	private static final byte ATTESTATION_REPLY_CODE = 0x01;
 	private static final byte IV_SIZE = 16;
 
-	private VMSConfiguration config;
+	private GOSConfiguration config;
 	private Socket clientSocket;
 	private ConcurrentHashMap.KeySetView<Integer, Boolean> nounces;
 
-	public VMSService(VMSConfiguration config, Socket clientSocket, ConcurrentHashMap.KeySetView<Integer, Boolean> nounces) {
+	public GOSService(GOSConfiguration config, Socket clientSocket, ConcurrentHashMap.KeySetView<Integer, Boolean> nounces) {
 		this.config = config;
 		this.clientSocket = clientSocket;
 		this.nounces = nounces;
@@ -49,7 +49,7 @@ public class VMSService implements Runnable {
 			DataOutputStream out = new DataOutputStream(clientSocket.getOutputStream());
 			DataInputStream in = new DataInputStream(clientSocket.getInputStream());
 
-			// get request
+			// obter pedido
 			byte attestationRequestCode = in.readByte();
 			if (attestationRequestCode != ATTESTATION_REQ_CODE) {
 				throw new BadRequestCodeException();
@@ -68,13 +68,13 @@ public class VMSService implements Runnable {
 			}
 			nounces.add(nounce);
 
-			// Get client's public number
+			// obter o numero publico enviado pelo cliente
 			KeyFactory keyFactory = KeyFactory.getInstance("DH", config.dhProvider);
 			X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(clientPublicKey);
 			PublicKey clientKey = keyFactory.generatePublic(x509KeySpec);
 			DHParameterSpec clientKeyDHParams = ((DHPublicKey)clientKey).getParams();
 
-			// Generate our own public + private number
+			// gerar o nosso proprio numero publico e numero privado
 			KeyPairGenerator keyGen = KeyPairGenerator.getInstance("DH", config.dhProvider);
 			keyGen.initialize(clientKeyDHParams);
 			KeyPair keyPair = keyGen.generateKeyPair();
@@ -84,7 +84,7 @@ public class VMSService implements Runnable {
 
 			byte[] publicEncoded = keyPair.getPublic().getEncoded();
 
-			// attestation signature
+			// assinar a atestacao
 			KeyStore keyStore = KeyStore.getInstance(config.keyStoreType);
 			keyStore.load(new FileInputStream(config.keyStoreFile), config.keyStorePassword.toCharArray());
 			PrivateKey privateKey = (PrivateKey)keyStore.getKey(config.keyPairAlias, config.keyPairPassword.toCharArray());
@@ -96,24 +96,29 @@ public class VMSService implements Runnable {
 			signature.update(dataToSign);
 			byte[] attestationSignature = signature.sign();
 
-			// attestation status
-			String lsRedisAttestation = CommandUtils.ls("-Al --author", config.redisPath);
-			String lsRedisSrcAttestation = CommandUtils.ls("-Al --author", config.redisSrcPath);
-		//	String dockerVMSAttestation = CommandUtils.dockerps(); // Apenas se estivesse os servicos vms e gos dockerizados
-		//	String dockerGOSAttestation = CommandUtils.dockerps(); // Apenas se estivesse os servicos vms e gos dockerizados
-
-			// cipher attestation status
+			// obter a atestacao
+			// nota: mais processos a correr nativamente pod
+			String psRedisAttestation = CommandUtils.ps("redis-server");
+			String psNautilusAttestation = CommandUtils.ps("nautilus");
+			String psGSDKeyboard = CommandUtils.ps("gsd-keyboard");
+			
+			System.out.println(psRedisAttestation);
+			System.out.println(psNautilusAttestation);
+			System.out.println(psGSDKeyboard);
+			System.out.println(psRedisAttestation+psNautilusAttestation+psGSDKeyboard);
+			
+			// cifrar a atestacao
 			MessageDigest hash = MessageDigest.getInstance(config.messageDigestAlgorithm, config.messageDigestAlgorithmProvider);
 			keyAgreement.doPhase(clientKey, true);
 			byte[] sharedSecret = hash.digest(keyAgreement.generateSecret());
 			SecretKeySpec secretKey = new SecretKeySpec(sharedSecret, 0, 16, "AES");
 			Cipher cipher = Cipher.getInstance(ciphersuite, config.dhProvider);
 			cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(iv));
-			byte[] status = hash.digest((lsRedisAttestation + lsRedisSrcAttestation)
+			byte[] status = hash.digest((psRedisAttestation + psNautilusAttestation + psGSDKeyboard)
 					.getBytes(StandardCharsets.UTF_8));
 			byte[] attestationStatus = cipher.doFinal(status);
 
-			// send attestation reply
+			// enviar a resposta ao cliente
 			out.writeByte(ATTESTATION_REPLY_CODE);
 			out.writeShort(publicEncoded.length);
 			out.write(publicEncoded);
@@ -123,7 +128,7 @@ public class VMSService implements Runnable {
 			out.writeShort(attestationStatus.length);
 			out.write(attestationStatus);
 			out.flush();
-			
+
 		} catch (Exception e) {
 			System.err.println(e.toString());
 		}

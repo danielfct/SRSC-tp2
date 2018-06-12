@@ -1,8 +1,9 @@
-package cliente;
+package client;
 
 interface RedisData {
 
-	static final int DATA_LENGTH = 100;
+	static final int DATA_SIZE = 100;
+	static final int NUM_COLUMNS = 5;
 	
 	static final int[] citizenCardId = new int[] {
 			204098170, 183905977, 103583584, 195603120, 284690675,

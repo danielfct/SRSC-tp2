@@ -1,4 +1,4 @@
-package vms.exceptions;
+package tpm.vms.exceptions;
 
 public class BadRequestCodeException extends Exception {
 

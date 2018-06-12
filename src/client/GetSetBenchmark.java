@@ -1,4 +1,4 @@
-package cliente;
+package client;
 
 import java.io.IOException;
 import java.net.UnknownHostException;

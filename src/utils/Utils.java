@@ -1,19 +1,11 @@
-package cliente;
+package utils;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 
 import java.security.KeyStore;
 import java.security.SecureRandom;
-
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
-
-import java.util.Properties;
 
 public class Utils {
 
@@ -45,22 +37,6 @@ public class Utils {
 		return nounce;
 	}
 
-	//TODO
-	public static String decryptFile(PBEKeySpec pbeKeySpec, String file) throws Exception {
-		// Read ciphered text
-		FileInputStream fis = new FileInputStream(file);
-		byte[] cipherText = new byte[fis.available()];
-		fis.read(cipherText);
-		fis.close();
-		// Decipher text
-		SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("PBEWithSHAAnd3KeyTripleDES");
-		SecretKey secretKey = secretKeyFactory.generateSecret(pbeKeySpec);
-		Cipher cipher = Cipher.getInstance("PBEWithSHAAnd3KeyTripleDES");
-		cipher.init(Cipher.DECRYPT_MODE, secretKey);
-		byte[] plainText = cipher.doFinal(cipherText);
-		return new String(plainText);
-	}
-
 	public static KeyStore getOrCreateKeyStore(String path, String password) throws Exception {
 		final File file = new File(path);
 		final KeyStore keyStore = KeyStore.getInstance("JCEKS");
@@ -72,6 +48,13 @@ public class Utils {
 			keyStore.store(new FileOutputStream(path), password.toCharArray());
 		}
 		return keyStore;
+	}
+	
+	public static byte[] createRandomIV(int size) {
+		byte[] iv = new byte[size];
+		SecureRandom r = new SecureRandom();
+		r.nextBytes(iv);
+		return iv;
 	}
 
 }
